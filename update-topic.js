@@ -1,48 +1,66 @@
 const { makeRequest } = require('./make-request');
+const { delay } = require('./delay');
 
 const updateTopic = async (forumTopicId, title, articleContent) => {
   let topicUpdateStatuses = {};
 
-  let bodyObj = { title };
+  let body = {
+    title: `freeCodeCamp Challenge Guide: ${title}`,
+    category_id: 504 //497
+  };
 
-  (async () => {
-    const titleResult = await makeRequest(
-      { method: 'put', endPoint: `t/-/${forumTopicId}`, bodyObj }
+  const titleResult = await makeRequest(
+    { method: 'put', endPoint: `t/-/${forumTopicId}`, body }
+  );
+  // update status of current request
+  topicUpdateStatuses = !titleResult.errors
+    ? { updateTitle: true }
+    : { updateTitle: false, errors: titleResult.errors }
+
+  // make sure the update worked
+  if (topicUpdateStatuses.updateTitle) {
+    const getResult = await makeRequest(
+      { method: 'get', endPoint: `t/${forumTopicId}/posts` }
     );
-    // update status of current request
-    topicUpdateStatuses = !titleResult.errors
-      ? { updateTitle: true }
-      : { updateTitle: false, errors: titleResult.errors }
+    await delay(1000);
+    // make sure get request for post worked
+    if (!getResult.errors) {
+      // prepare to update first post's content
+      const [{ id: firstPostId }] = getResult.post_stream.posts;
+      body = { raw: articleContent };
+      const postResult = await makeRequest(
+        { method: 'put', endPoint: `posts/${firstPostId}`, body });
 
-    // make sure the update worked
-    if (topicUpdateStatuses.updateTitle) {
-      const getResult = await makeRequest(
-        { method: 'get', endPoint: `t/${forumTopicId}/posts` }
-      );
+      topicUpdateStatuses = !(postResult.errors)
+        ? { ...topicUpdateStatuses, updateContent: true }
+        : { ...topicUpdateStatuses, updateContent: false, errors: postResult.errors };
 
-      // make sure get request for post worked
-      if (!getResult.errors) {
-        // prepare to update first post's content
-        const [{ id: firstPostId }] = getResult.post_stream.posts;
-        bodyObj = { raw: articleContent };
-        const postResult = await makeRequest(
-          { method: 'put', endPoint: `posts/${firstPostId}`, bodyObj });
-        topicUpdateStatuses = !(postResult.errors)
-          ? { ...topicUpdateStatuses, updateContent: true }
-          : { ...topicUpdateStatuses, updateContent: false, errors: postResult.errors };
+      await delay(1000);
 
-      } else {
-        // get request for post failed
-        topicUpdateStatuses = { ...topicUpdateStatuses, updateContent: false, errors: getResult.errors };
-      }
+      // lock post
+      body = { locked: true };
+      const lockResult = await makeRequest({
+        method: 'put',
+        endPoint: `posts/${firstPostId}/locked`,
+        contentType: 'application/x-www-form-urlencoded',
+        body
+      });
+      
+      topicUpdateStatuses = !(lockResult.errors)
+        ? { ...topicUpdateStatuses, updateLock: true }
+        : { ...topicUpdateStatuses, updateLock: false, errors: lockResult.errors };
+
+    } else {
+      // get request for post failed
+      topicUpdateStatuses = { ...topicUpdateStatuses, updateContent: false, errors: getResult.errors };
     }
+  }
 
-    const { updateTitle, updateContent, errors } = topicUpdateStatuses;
-    
-    return updateTitle && updateContent 
-      ? { status: 'success'}
-      : { status: 'failed', errors };
-  })();
+  const { updateTitle, updateContent, errors } = topicUpdateStatuses;
+
+  return updateTitle && updateContent
+    ? { status: 'success' }
+    : { status: 'failed', errors };
 }
 
 module.exports = { updateTopic }

@@ -9,8 +9,18 @@ const consoleLog = (forumTopicId, errors) => {
   console.log();
 };
 
-const data = fs.readFileSync('./data/forum-topics-and-challenge-files-matrix.json', 'utf8');
-const matchedForumTopics = JSON.parse(data).matches;
+const matchedForumTopics = [
+  {
+    "sectionName": "Coding Interview Prep",
+    "challengeFilePath": "curriculum/challenges/english/08-coding-interview-prep/algorithms/no-repeats-please.english.md",
+    "guideFilePath": "D:/Coding/fcc/guide/english/certifications/coding-interview-prep/algorithms/no-repeats-please/index.md",
+    "title": "No Repeats Please",
+    "forumName": "no-repeats-please",
+    "isStub": false,
+    "forumArticleUrl": "https://www.freecodecamp.org/forum/t/freecodecamp-algorithm-challenge-guide-no-repeats-please/16037",
+    "forumTopicId": "297904"
+  }
+];
 const scriptResults = [];
 
 (async () => {
