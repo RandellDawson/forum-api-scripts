@@ -6,7 +6,7 @@ const updateTopic = async (forumTopicId, title, articleContent) => {
 
   let body = {
     title: `freeCodeCamp Challenge Guide: ${title}`,
-    category_id: 504 //497
+    category_id: 497
   };
 
   const titleResult = await makeRequest(

@@ -12,7 +12,37 @@ const consoleLog = (forumTopicId, errors) => {
   console.log();
 };
 
-const data = fs.readFileSync('D:/Coding/search-files/data/forum-topics-and-challenge-files-matrix.json', 'utf8');
+// this code below is just for testing purposes
+const data = `{
+  "numMatches": 2,
+  "numNonMatches": 0,
+  "total": 2,
+  "matches": [
+    {
+      "sectionName": "Coding Interview Prep",
+      "challengeFilePath": "curriculum/challenges/english/08-coding-interview-prep/algorithms/no-repeats-please.english.md",
+      "guideFilePath": "D:/Coding/fcc/guide/english/certifications/coding-interview-prep/algorithms/no-repeats-please/index.md",
+      "title": "No Repeats Please",
+      "forumName": "no-repeats-please",
+      "isStub": false,
+      "forumArticleUrl": "https://www.freecodecamp.org/forum/t/freecodecamp-algorithm-challenge-guide-no-repeats-please/16037",
+      "forumTopicId": "300583"
+    },
+    {
+      "sectionName": "JavaScript Algorithms and Data Structures",
+      "challengeFilePath": "curriculum/challenges/english/02-javascript-algorithms-and-data-structures/debugging/use-typeof-to-check-the-type-of-a-variable.english.md",
+      "guideFilePath": "D:/Coding/fcc/guide/english/certifications/javascript-algorithms-and-data-structures/debugging/use-typeof-to-check-the-type-of-a-variable/index.md",
+      "title": "Use typeof to Check the Type of a Variable",
+      "forumName": "use-typeof-to-check-the-type-of-a-variable",
+      "isStub": false,
+      "forumArticleUrl": "https://www.freecodecamp.org/forum/t/freecodecamp-challenge-guide-use-typeof-to-check-the-type-of-a-variable/18374",
+      "forumTopicId": "300584"
+    }
+  ]
+}`;
+
+// this code above is just for testing purposes
+
 const matchedForumTopics = JSON.parse(data).matches;
 const scriptResults = [];
 
