@@ -6,7 +6,7 @@ const addTopic = async (title, articleContent) => {
 
   let body = {
     title: `freeCodeCamp Challenge Guide: ${title}`,
-    category: 504, //497
+    category: 497,
     raw: articleContent
   };
 

@@ -1,8 +1,11 @@
 const fs = require('fs');
-const { delay } = require('./delay');
+var path = require('path');
+const { delay } = require('./utils/delay');
 const { getGuideArticleContent } = require('./get-guide-article-content');
 const { updateTopic } = require('./update-topic');
-const { updateLog } = require('./update-log');
+const { updateLog } = require('./utils/update-log');
+const walkDir = require('./utils/walk-dir');
+const { getTopicsToNotUpdate } = require('./utils/get-complete-updated-topics');
 
 const logFile = './data/forum-topics-update-log.json';
 
@@ -12,8 +15,16 @@ const consoleLog = (forumTopicId, errors) => {
   console.log();
 };
 
+// prevents duplicating updates of forum topics previously updated in runs of this script
+const topicsToNotUpdate = getTopicsToNotUpdate();
+
+// main list of topics to consider updating
 const data = fs.readFileSync('D:/Coding/search-files/data/forum-topics-and-challenge-files-matrix.json', 'utf8');
-const matchedForumTopics = JSON.parse(data).matches;
+
+// exclude topics which have already been updated successfully
+const matchedForumTopics = JSON.parse(data).matches
+  .filter(({ forumTopicId }) => !topicsToNotUpdate[forumTopicId]);
+
 const scriptResults = [];
 
 (async () => {
@@ -30,7 +41,7 @@ const scriptResults = [];
       // no guide content
     } else {
       const errMsg = 'no guide content found to update forum topic';
-      toLog = { ...toLog, errors: [ errMsg ] };
+      toLog = { ...toLog, errors: [errMsg] };
       consoleLog(errMsg);
     }
     scriptResults.push(toLog);

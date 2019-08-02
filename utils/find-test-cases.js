@@ -1,5 +1,5 @@
 const fs = require('fs');
-const { getGuideArticleContent } = require('./get-guide-article-content');
+const { getGuideArticleContent } = require('../get-guide-article-content');
 
 
 const data = fs.readFileSync('D:/Coding/search-files/data/forum-topics-and-challenge-files-matrix.json', 'utf8');
