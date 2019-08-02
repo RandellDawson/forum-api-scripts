@@ -17,5 +17,4 @@ const getTopicsToNotUpdate = () => {
   return topicsToNotUpdate;
 };
 
-getTopicsToNotUpdate();
 module.exports = { getTopicsToNotUpdate };

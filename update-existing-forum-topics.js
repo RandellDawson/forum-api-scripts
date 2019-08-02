@@ -1,10 +1,8 @@
 const fs = require('fs');
-var path = require('path');
 const { delay } = require('./utils/delay');
 const { getGuideArticleContent } = require('./get-guide-article-content');
 const { updateTopic } = require('./update-topic');
 const { updateLog } = require('./utils/update-log');
-const walkDir = require('./utils/walk-dir');
 const { getTopicsToNotUpdate } = require('./utils/get-complete-updated-topics');
 
 const logFile = './data/forum-topics-update-log.json';
@@ -27,7 +25,10 @@ const matchedForumTopics = JSON.parse(data).matches
 
 const scriptResults = [];
 
+console.log('Starting to update ' + matchedForumTopics.length + ' topics...');
+
 (async () => {
+  let count = 0;
   for (let { challengeFilePath, guideFilePath, title, forumTopicId } of matchedForumTopics) {
     const guideArticleContent = getGuideArticleContent(guideFilePath);
     let toLog = { forumTopicId, title, challengeFilePath, guideFilePath };
@@ -46,7 +47,15 @@ const scriptResults = [];
     }
     scriptResults.push(toLog);
     updateLog(logFile, scriptResults);
-    await delay(3000);
+    count++;
+    if (count % 25 === 0 && count < matchedForumTopics.length - 1) {
+      console.log('attempted ' + count + ' updates');
+      console.log('pausing for 30 seconds before updating more topics...');
+      await delay(30000);
+      console.log('starting to update topics again...');
+    } else {
+      await delay(3000);
+    }
   }
 
   //count the number of successful updates
