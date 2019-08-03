@@ -20,7 +20,7 @@ const consoleLog = (title, errors) => {
 // used to prevent duplicating additions of forum topics previously added in runs of this script
 const challengesToNotAdd = getchallengesToNotAdd();
 
-// main list of topics to consider adding
+// list of challenges which were updated instead of needing a new topic
 const data = fs.readFileSync('D:/Coding/search-files/data/forum-topics-and-challenge-files-matrix.json', 'utf8');
 
 // lookup to prevent adding topics for challenges which have existing topics
