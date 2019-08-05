@@ -1,5 +1,5 @@
 const fetch = require('node-fetch');
-let { headers } = require('./headers');
+let { headers } = require('../headers');
 
 const makeRequest = async ({
   method,

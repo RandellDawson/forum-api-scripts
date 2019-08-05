@@ -1,5 +1,5 @@
 const { makeRequest } = require('./make-request');
-const { delay } = require('./utils/delay');
+const { delay } = require('./delay');
 
 const updateTopic = async (forumTopicId, title, articleContent) => {
   let topicUpdateStatuses = {};
