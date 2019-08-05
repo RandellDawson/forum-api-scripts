@@ -2,12 +2,11 @@ const fs = require('fs');
 const { delay } = require('./utils/delay');
 const { unlistTopic } = require('./unlist-topic');
 const { updateLog } = require('./utils/update-log');
+const { getChallengeData } = require('./utils/getChallengeData');
 
 const logFile = './data/topics-unlisted-log.json';
 
-// get list of topics to unlist
-/* Need to write logic which will extract the frontmatter forumTopicId from each
-to use to unlist applicable topics */
+const topicsToUnlist = getChallengeData().map(({ forumTopicId }) => forumTopicId);
 
 const scriptResults = [];
 
