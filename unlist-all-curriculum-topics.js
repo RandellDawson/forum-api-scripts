@@ -1,4 +1,3 @@
-const fs = require('fs');
 const { delay } = require('./utils/delay');
 const { unlistTopic } = require('./unlist-topic');
 const { updateLog } = require('./utils/update-log');
