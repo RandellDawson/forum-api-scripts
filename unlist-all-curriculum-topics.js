@@ -1,7 +1,7 @@
 const { delay } = require('./utils/delay');
 const { unlistTopic } = require('./unlist-topic');
 const { updateLog } = require('./utils/update-log');
-const { getChallengeData } = require('./utils/getChallengeData');
+const { getChallengeData } = require('./utils/get-challenge-data');
 
 const logFile = './data/topics-unlisted-log.json';
 

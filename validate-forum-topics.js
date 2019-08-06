@@ -1,5 +1,5 @@
 const fs = require('fs');
-const { getChallengeData } = require('./utils/getChallengeData');
+const { getChallengeData } = require('./utils/get-challenge-data');
 
 // forum topics
 const topicsJSON = fs.readFileSync('./data/freeCodeCamp-challenge-guide-topics.json', 'utf8');
