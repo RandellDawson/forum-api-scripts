@@ -4,12 +4,11 @@ const { updateLog } = require('./utils/update-log');
 const { getChallengeData } = require('./utils/get-challenge-data');
 
 let [ lockStatus ] = process.argv.slice(2);
-if (lockStatus !== 'locked' && lockStatus !== 'unlocked') {
-  console.log('lockStatus = ' + lockStatus);
-  console.log('Please specify argument value of "locked" or "unlocked" when running this script.');
+if (lockStatus !== 'lock' && lockStatus !== 'unlock') {
+  console.log('Please specify argument value of "lock" or "unlock" when running this script.');
   process.exit();
 }
-lockStatus = lockStatus === 'unlocked' ? 'false' : 'true';
+lockStatus = lockStatus === 'unlock' ? 'false' : 'true';
 
 const logFile = './data/topics-lock-status-log.json';
 
@@ -31,7 +30,7 @@ console.log('Starting to change status to ' + lockStatus + ' for ' + topicsToCha
     scriptResults.push(toLog);
     updateLog(logFile, scriptResults);
     count++;
-    if (count % 100 === 0 && count < topicsToAdd.length - 1) {
+    if (count % 100 === 0 && count < topicsToChangeLockStatus.length - 1) {
       console.log('processed ' + count + ' topics');
       console.log('pausing for 20 seconds before changing lock status of more topics...');
       await delay(20000);
