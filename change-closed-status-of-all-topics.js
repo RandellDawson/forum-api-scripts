@@ -1,14 +1,14 @@
 const { delay } = require('./utils/delay');
-const { changeTopicLockStatus } = require('./utils/change-topic-lock-status');
+const { changeTopicLockStatus } = require('./utils/change-topic-closed-status');
 const { updateLog } = require('./utils/update-log');
 const { getChallengeData } = require('./utils/get-challenge-data');
 
 let [ lockStatus ] = process.argv.slice(2);
-if (lockStatus !== 'lock' && lockStatus !== 'unlock') {
-  console.log('Please specify argument value of "lock" or "unlock" when running this script.');
+if (lockStatus !== 'open' && lockStatus !== 'closed') {
+  console.log('Please specify argument value of "open" or "closed" when running this script.');
   process.exit();
 }
-lockStatus = lockStatus === 'unlock' ? 'false' : 'true';
+lockStatus = lockStatus === 'open' ? 'false' : 'true';
 
 const logFile = './data/topics-lock-status-log.json';
 

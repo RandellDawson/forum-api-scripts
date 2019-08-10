@@ -4,11 +4,11 @@ const { updateLog } = require('./utils/update-log');
 const { getChallengeData } = require('./utils/get-challenge-data');
 
 let [ visibleStatus ] = process.argv.slice(2);
-if (visibleStatus !== 'list' && visibleStatus !== 'unlist') {
-  console.log('Please specify argument value of "list" or "unlist" when running this script.');
+if (visibleStatus !== 'visible' && visibleStatus !== 'hidden') {
+  console.log('Please specify argument value of "visible" or "hidden" when running this script.');
   process.exit();
 }
-visibleStatus = visibleStatus === 'list' ? "true" : "false";
+visibleStatus = visibleStatus === 'visible' ? "true" : "false";
 
 const logFile = './data/topics-visible-status-log.json';
 
