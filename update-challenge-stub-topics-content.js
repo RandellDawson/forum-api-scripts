@@ -4,14 +4,14 @@ const { makeRequest } = require("./utils/make-request");
 const { updateLog } = require("./utils/update-log");
 
 const stubMessage = `
-This is a stub. Help the community by creating a new topic in the [Contributors](https://forum.freecodecamp.org/c/contributors/3) category with your suggested hints and/or solutions. We may use those to update this stub.
+This is a stub. Help the community by creating a new topic in the [Contributors](https://forum.freecodecamp.org/c/contributors/3) category with your suggested hints and/or solutions. We may use your suggestions to update this stub.
 `;
 
 const stubTopics = fs.readFileSync("./data/stub-topics.json", "utf8");
 const topicIDsToUpdate = JSON.parse(stubTopics).rows;
 
 const getHeadingLink = (content) => {
-  const headLinkRegex = /\s*(?<mainHeaderLink>#\s+.+)\s*\)\n+/;
+  const headLinkRegex = /\s*(?<mainHeaderLink>#\s+.+\))\n+/;
   const match = content.match(headLinkRegex);
   const { mainHeaderLink } = match.groups;
   return mainHeaderLink;
@@ -40,6 +40,7 @@ const scriptResults = [];
       toLog = { ...toLog, status: getPostResult.status };
       if (!getPostResult.errors) {
         body = { raw: newContent };
+        await delay(5000);
         const postResult = await makeRequest({
           method: "put",
           endPoint: `posts/${firstPostId}`,
@@ -47,13 +48,9 @@ const scriptResults = [];
         });
 
         if (!postResult.errors) {
-          toLog = { ...toLog, mainHeader, status: "success" };
+          toLog = { ...toLog, headingLink, status: "success" };
         } else {
-          toLog = {
-            ...toLog,
-            status: "failed",
-            errors: postResult.errors,
-          };
+          toLog = { ...toLog, status: "failed", errors: postResult.errors };
         }
       } else {
         toLog = { ...toLog, errors: getPostResult.errors };
@@ -70,7 +67,7 @@ const scriptResults = [];
     updateLog(logFile, scriptResults);
     count++;
     if (count % 50 === 0 && count < topicIDsToUpdate.length - 1) {
-      console.log("stopped after " + count + " attempted updates");
+      console.log("stopped after " + count + " total attempted updates");
       console.log("attempted " + count + " updates");
       console.log("pausing for 20 seconds before updating more topics...");
       await delay(20000);
@@ -78,10 +75,9 @@ const scriptResults = [];
     } else {
       await delay(1000);
     }
-    break;
   }
   //count the number of successful updates
-  const successfulUpdates = scriptResults.filter(({ status }) => status === 'sucess');
+  const successfulUpdates = scriptResults.filter(({ status }) => status === 'success');
   console.log("topics to update: " + count);
   console.log("sucessful updates: " + successfulUpdates.length);
 })();
