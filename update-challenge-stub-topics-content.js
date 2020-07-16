@@ -2,10 +2,11 @@ const fs = require("fs");
 const { delay } = require("./utils/delay");
 const { makeRequest } = require("./utils/make-request");
 const { updateLog } = require("./utils/update-log");
+const { createSuggestionUri } = require("./utils/create-suggestion-uri");
 
-const stubMessage = `
-This is a stub. Help the community by creating a new topic in the [Contributors](https://forum.freecodecamp.org/c/contributors/3) category with your suggested hints and/or solutions. We may use your suggestions to update this stub.
-`;
+const createStubMessage = suggestionUri => {
+  return `This is a stub. Help the community by [creating a new topic in the Contributors category](${suggestionUri}) with your suggested hints and/or solutions. We may use your suggestions to update this stub.`;
+};
 
 const stubTopics = fs.readFileSync("./data/stub-topics.json", "utf8");
 const topicIDsToUpdate = JSON.parse(stubTopics).rows;
@@ -23,9 +24,14 @@ const scriptResults = [];
 (async () => {
   let count = 0;
   for (let [forumTopicId, content] of topicIDsToUpdate) {
-    const headingLink = getHeadingLink(content);
-    const newContent = `${headingLink}\n${stubMessage}`;
-    let toLog = { forumTopicId, headingLink };
+    const headingMarkdownLink = getHeadingLink(content);
+    const { challengeTitle, challengeLink } = headingMarkdownLink
+      .match(/\[\s*(?<challengeTitle>.+)\]\s*\((?<challengeLink>.+)\)/
+    ).groups;
+    const suggestionUri = createSuggestionUri(challengeTitle, challengeLink);
+    const stubMessage = createStubMessage(suggestionUri);
+    const newContent = `${headingMarkdownLink}\n${stubMessage}`;
+    let toLog = { forumTopicId, headingMarkdownLink };
     const getTopicResult = await makeRequest({
       method: "get",
       endPoint: `t/${forumTopicId}/posts`,
@@ -48,7 +54,7 @@ const scriptResults = [];
         });
 
         if (!postResult.errors) {
-          toLog = { ...toLog, headingLink, status: "success" };
+          toLog = { ...toLog, headingMarkdownLink, status: "success" };
         } else {
           toLog = { ...toLog, status: "failed", errors: postResult.errors };
         }
