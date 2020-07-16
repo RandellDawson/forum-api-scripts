@@ -4,7 +4,7 @@ const { getChallengeData } = require('./utils/get-challenge-data');
 const { updateLog } = require('./utils/update-log');
 
 const createHeaderLink = (title, challengeUrlPath) => {
-  return `[${title}](https://www.freecodecamp.org/learn/${challengeUrlPath})`;
+  return `# [${title}](https://www.freecodecamp.org/learn/${challengeUrlPath})`;
 };
 
 const replaceContent = (challengeFilePath, content) => {
@@ -15,8 +15,13 @@ const replaceContent = (challengeFilePath, content) => {
   const challengeUrlPath = challengeFilePath
     .replace('.english.md', '')
     .replace(/curriculum\/challenges\/english\/\d+-/, '');
-  const newMainHeaderLink = createHeaderLink(title, challengeUrlPath);
-  return { mainHeader: newMainHeaderLink, newContent: content.replace(mainHeader, newMainHeaderLink) }; 
+  if (!/\[/.test(title)) {
+    const newMainHeaderLink = createHeaderLink(title, challengeUrlPath);
+    return { mainHeader: newMainHeaderLink, newContent: content.replace(mainHeader, newMainHeaderLink) };
+  } else {
+    return { mainHeader, newContent: content };
+  } 
+   
 };
 
 const logFile = './data/forum-topics-update-main-header-as-link-log.json';
@@ -47,10 +52,13 @@ const challenges = getChallengeData();
             { method: 'put', endPoint: `posts/${firstPostId}`, body });
 
           if (!postResult.errors) {
-            toLog = { ...toLog, status: 'success' };
+            toLog = { ...toLog, mainHeader, status: 'success' };
           } else {
             toLog = { ...toLog, status: 'failed', errors: postResult.errors };
           }
+        } else {
+          console.log(`topic# ${forumTopicId}'s main header already contained markdown link`);
+          toLog = { ...toLog, status: 'failed', errors: 'topic title already contained markdown link' };
         }
       } else {
         toLog = { ...toLog, errors: getPostResult.errors };
@@ -65,7 +73,6 @@ const challenges = getChallengeData();
     count++;
     if (count % 20 === 0 && count < challenges.length - 1) {
       console.log('stopped after ' + count + ' attempted updates');
-      process.exit();
       console.log('attempted ' + count + ' updates');
       console.log('pausing for 20 seconds before updating more topics...');
       await delay(20000);
