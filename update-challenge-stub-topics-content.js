@@ -31,9 +31,7 @@ const scriptResults = [];
     const suggestionUri = createSuggestionUri(challengeTitle, challengeLink);
     const stubMessage = createStubMessage(suggestionUri);
     const newContent = `${headingMarkdownLink}\n${stubMessage}`;
-    console.log(newContent);
-    break;
-    let toLog = { forumTopicId, headingLink };
+    let toLog = { forumTopicId, headingMarkdownLink };
     const getTopicResult = await makeRequest({
       method: "get",
       endPoint: `t/${forumTopicId}/posts`,
@@ -56,7 +54,7 @@ const scriptResults = [];
         });
 
         if (!postResult.errors) {
-          toLog = { ...toLog, headingLink, status: "success" };
+          toLog = { ...toLog, headingMarkdownLink, status: "success" };
         } else {
           toLog = { ...toLog, status: "failed", errors: postResult.errors };
         }
