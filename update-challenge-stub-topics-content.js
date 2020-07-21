@@ -5,7 +5,7 @@ const { updateLog } = require("./utils/update-log");
 const { createSuggestionUri } = require("./utils/create-suggestion-uri");
 
 const createStubMessage = suggestionUri => {
-  return `This is a stub. Help the community by [creating a new topic in the Contributors category](${suggestionUri}) with your suggested hints and/or solutions. We may use your suggestions to update this stub.`;
+  return `This is a stub. Help the community by [making a suggestion](${suggestionUri}) of a hint and/or solution.  We may use your suggestions to update this stub.`;
 };
 
 const stubTopics = fs.readFileSync("./data/stub-topics.json", "utf8");
@@ -46,7 +46,7 @@ const scriptResults = [];
       toLog = { ...toLog, status: getPostResult.status };
       if (!getPostResult.errors) {
         body = { raw: newContent };
-        await delay(5000);
+        await delay(6000);
         const postResult = await makeRequest({
           method: "put",
           endPoint: `posts/${firstPostId}`,
@@ -72,11 +72,10 @@ const scriptResults = [];
     scriptResults.push(toLog);
     updateLog(logFile, scriptResults);
     count++;
-    if (count % 50 === 0 && count < topicIDsToUpdate.length - 1) {
+    if (count % 25 === 0 && count < topicIDsToUpdate.length - 1) {
       console.log("stopped after " + count + " total attempted updates");
-      console.log("attempted " + count + " updates");
-      console.log("pausing for 20 seconds before updating more topics...");
-      await delay(20000);
+      console.log("pausing for 10 seconds before updating more topics...");
+      await delay(10000);
       console.log("starting to update topics again...");
     } else {
       await delay(1000);
